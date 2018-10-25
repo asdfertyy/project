@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
 
 {% block head %}
 <title>Home</title>
 {% endblock %}
 {% block body %}
-<h1>Home</h1>
+<!--<h1>Home</h1>-->
+<div id="App1"></div>
+{% render_bundle 'vendors' %}
+{% render_bundle 'App1' %}
 {% endblock %}

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'webpack_loader',
 ]
 
 MIDDLEWARE = [
@@ -119,6 +120,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'djreact/static'),
+]
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/local/',  # end with slash
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-local.json'),
+    }
+}
 
 
 LOGIN_REDIRECT_URL = '/account/'
