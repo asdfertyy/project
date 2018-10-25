@@ -1,5 +1,0 @@
-{
-  "verbose": true,
-  "watch": ["./reactjs/containers/App1Container.jsx"],
-  "ignore": ["webpack-stats-local.json"]
-}
