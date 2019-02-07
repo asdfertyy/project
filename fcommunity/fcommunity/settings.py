@@ -133,4 +133,4 @@ WEBPACK_LOADER = {
 }
 
 
-LOGIN_REDIRECT_URL = '/account/'
+LOGIN_REDIRECT_URL = '/account/profile'
