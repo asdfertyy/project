@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+
+{% block head %}
+<title>Home</title>
+{% endblock %}
+{% block body %}
+
+<div class = "container">
+    <p>
+        <p>{{ user }}</p>
+        <p>Name: {{ user.first_name }} {{ user.last_name }}</p>
+        <p>Email: {{ user.email }}</p>
+        <p>Team:
+        <a href="{% url 'team_profile' pk=user.userprofile.teams.team_id %}">
+            {{ user.userprofile.teams }}
+        </a>
+        </p>
+        <p>User Description: {{ user.userprofile.description }}</p>
+    </p>
+</div>
+{% endblock %}

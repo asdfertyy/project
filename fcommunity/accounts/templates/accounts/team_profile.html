@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+
+{% block head %}
+<title>Home</title>
+{% endblock %}
+{% block body %}
+
+<p class = "container">
+    <p>
+        <p>Name: {{ team.team_name }}</p>
+        <p>Date Formed: {{ team.team_date_formed }}</p>
+        <p>Matches Played: {{ team.team_matches_played }}</p>
+        <p>
+            W: {{ team.team_wins }}
+            <br>
+            D: {{ team.team_draws }}
+            <br>
+            L: {{ team.team_losses }}
+        </p>
+        <p>Team Address: {{ team.team_address }}</p>
+        <p>Team Description: {{ team.team_description }}</p>
+        <p>Competitions:<br>
+        {% for comp in team.comps.all %}
+            <a href="{% url 'comp_profile' pk=comp.comp_id %}">
+                {{ comp }}
+            </a>
+            <br>
+        {% endfor %}
+        </p>
+    </p>
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+
+{% block head %}
+<title>Home</title>
+{% endblock %}
+{% block body %}
+
+<p class = "container">
+    <p>
+        <p>Name: {{ comp.comp_name }}</p>
+        {% if comp.comp_type is 0 %}
+            <p> Group & Knockout </p>
+        {% elif comp.comp_type is 1 %}
+            <p> League </p>
+        {% else %}
+            <p> Knockout </p>
+        {% endif %}
+        <p>Team Size: {{ comp.comp_teamsize }}</p>
+        <p>Squad Size: {{ comp.comp_squadsize }}</p>
+        <p>Start Date: {{ comp.comp_start_date }}</p>
+        <p>End Date: {{ comp.comp_end_date }}</p>
+
+        <!--<p>Teams:<br>-->
+        <!--{% for team in team.comps %}-->
+            <!--<a href="{% url 'comp_profile' pk=comp.comp_id %}">-->
+                <!--{{ comp }}-->
+            <!--</a>-->
+            <!--<br>-->
+        <!--{% endfor %}-->
+        <!--</p>-->
+    </p>
+</div>
+{% endblock %}
