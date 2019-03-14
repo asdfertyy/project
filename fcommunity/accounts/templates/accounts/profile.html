@@ -8,11 +8,14 @@
 
 <div class = "container">
     <p>
-        <p>{{ user }}</p>
-        <p>First Name: {{ user.first_name }}</p>
-        <p>Last Name: {{ user.last_name }}</p>
+        <p><img src = {{ user.userprofile.user_image }}></p>
+        <p class="font-weight-bold"><h2>{{ user.first_name }} {{ user.last_name }}</h2></p>
         <p>Email: {{ user.email }}</p>
-        <p>Team: {{ user.userprofile.teams }}</p>
+        <p>Team:
+            <a href="{% url 'team_profile' pk=user.userprofile.teams.team_id %}">
+                {{ user.userprofile.teams }} </a>
+            <button type="button" class="btn btn-secondary">Leave Team</button>
+            <button type="button" class="btn btn-secondary">Think of leaving</button>
     </p>
 </div>
 {% endblock %}

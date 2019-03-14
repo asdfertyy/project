@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+
+{% block head %}
+<title>Home</title>
+{% endblock %}
+{% block body %}
+<div id="googleMap" style="width:300px;height:400px;"></div>
+<script>
+function initMap() {
+  // The location of Uluru
+  var uluru = new google.maps.LatLng({{ ground.ground_latitude }}, {{ ground.ground_longitude }});
+  // The map, centered at Uluru
+  var map = new google.maps.Map(
+      document.getElementById('googleMap'), {zoom: 15, center: uluru});
+  // The marker, positioned at Uluru
+  var marker = new google.maps.Marker({position: uluru, map: map});
+}
+</script>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8XU4PSHx0Isv2mLtE04TA1twJ0K0Ru_g&callback=initMap"></script>
+
+<p class = "container">
+    <p>
+        <p>Name: {{ ground.ground_name }}</p>
+        <p>Address: {{ ground.ground_address }}</p>
+        <p>Description: {{ ground.ground_description }}</p>
+        {% if ground.is_it_paid is 1 %}
+            <p> Pay to Play </p>
+        {% else %}
+            <p> Free to Play </p>
+        {% endif %}
+        Comments: {{ ground.comments.count }}
+        <br>
+        <a class="btn btn-default" href="{% url 'add_comment_to_ground' pk=ground.ground_id %}">Add comment</a>
+        <br>
+        ____________________________________________
+
+        {% for comment in ground.comments.all %}
+            <div class="comment">
+                <strong>{{ comment.author }}: </strong>
+                <p>{{ comment.body|linebreaks }}</p>
+                {{ comment.created }}
+                <br>
+                ____________________________________________
+            </div>
+        {% empty %}
+        <p>No comments here yet :(</p>
+        {% endfor %}
+    </p>
+</div>
+{% endblock %}

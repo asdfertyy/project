@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+
+{% block head %}
+<title>Home</title>
+{% endblock %}
+{% block body %}
+<div id="googleMap" style="width:300px;height:400px;"></div>
+<script>
+function initMap() {
+  // The location of Uluru
+  var uluru = new google.maps.LatLng(53.480614, -2.237503);
+  // The map, centered at Uluru
+  var map = new google.maps.Map(
+      document.getElementById('googleMap'), {zoom: 12, center: uluru});
+  // The marker, positioned at Uluru
+  {% for ground in grounds %}
+        var markerPoint = new google.maps.LatLng({{ ground.ground_latitude }}, {{ ground.ground_longitude }});
+        var marker = new google.maps.Marker({position: markerPoint, map: map});
+  {% endfor %}
+}
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8XU4PSHx0Isv2mLtE04TA1twJ0K0Ru_g&callback=initMap"></script>
+<a class="btn btn-default" href="{% url 'new_ground' %}">Add new ground</a>
+<div class = "container">
+    <h2>All Grounds:</h2>
+    {% for ground in grounds %}
+        <a href="{% url 'ground_profile' pk=ground.ground_id %}">
+        <h5>{{ ground }}</h5>
+        </a>
+    <br>
+    {% endfor %}
+</div>
+{% endblock %}

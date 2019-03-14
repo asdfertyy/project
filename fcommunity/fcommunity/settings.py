@@ -32,6 +32,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'accounts',
+    'django_google_maps',
+    'easy_maps',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -134,3 +136,7 @@ WEBPACK_LOADER = {
 
 
 LOGIN_REDIRECT_URL = '/account/profile'
+
+GOOGLE_MAPS_API_KEY = 'AIzaSyB8XU4PSHx0Isv2mLtE04TA1twJ0K0Ru_g'
+EASY_MAPS_GOOGLE_MAPS_API_KEY = 'AIzaSyB8XU4PSHx0Isv2mLtE04TA1twJ0K0Ru_g'
+EASY_MAPS_CENTER = (53.480614, -2.237503)

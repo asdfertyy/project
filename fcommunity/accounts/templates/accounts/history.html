@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+
+{% block head %}
+<title>Home</title>
+{% endblock %}
+{% block body %}
+
+<div class = "container">
+    <p><img src = {{ team.team_logo }}></p>
+        <p class="font-weight-bold"><h2>{{ team.team_name }} match history:</h2></p>
+        {% for result in result %}
+            <h5>{{ result }} asd</h5>
+            {% ifequal match_result.home_team.team_name team.team_name %}
+                <h5>{{ result }}</h5>
+            {% endifequal %}
+            {% ifequal match_result.match_away_team team %}
+                <h5>{{ result }}</h5>
+            {% endifequal %}
+    <br>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+- What my project is, why I have decided to do it, why would it be helpful,
+    what challenges does it make? real life examples?
+
+- What my initial idea was, why did we end up with this idea
+
+- Why Django instead of any other back-end framework, Why python and not
+    JS or Java
+
+- Why React for front-end and not the Django front-end or any other
+    front-end framework
+
+- How did I implement them together, were there any other options,
+    why did I choose this way of implementing it
+
+- Why mySQL for dbs and not anything else
+
+- database and different tables in it, why is everything there,
+    why are some things missing
+    (e.g. age restriction, comments on user profiles, ratings for users...)
+
+- talk about possible problems due to the app being based on actual people
+    (e.g. not showing up for matches, trying to cheat about match outcomes...)
+    and how would I try to prevent them from happening in a good way
+
+- talk about security and Django-implemented CSRF
+
+- talk about user's locations and how this is handled without
+    giving away personal information
+
+- age restriction also helps with not giving away personal information
+    like needing to know user's birtdhay
+
+- User and team descriptions
+
+- Why do I use Google Maps and why is it essential
+
+- How will I schedule matches for competitions
+
+- team options(closed, open, needs approval...)
+
+- team captains
+
+- how to deal with inactive users that cramp up player spots in teams,
+    maybe even inactive captains
+
+- user can be a part of multiple teams as long as they are at
+    at least a specific distance away from any of his other teams
+
+- team gets automatically created if there are no teams near a new user
+    to deal with clustering problem without using algorithms
+
+- Automatically propose competitions for nearby teams,
+    willing to change team checkbox -> clustering problem
+
+- Why Kmeans for clustering instead of mean-shift or hierarchical clustering
+
+- single matches, single-team matches
+
+- how to make sure users have a general idea of how good a team is
+    (team ratings)
+
+- Football pitches, have users contribute to adding them,
+    have them rate and comment them
+
+- team chats and match chats to help with organising
+
+- match chats with votes for deciding on time and place?
+
+- test data
+
+- Kmeans

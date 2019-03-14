@@ -8,15 +8,10 @@
 
 <div class = "container">
     <p>
-        <p>{{ user }}</p>
-        <p>Name: {{ user.first_name }} {{ user.last_name }}</p>
+        <p><img src = {{ user.userprofile.user_image }}></p>
+        <p class="font-weight-bold"><h2>{{ user.first_name }} {{ user.last_name }}</h2></p>
         <p>Email: {{ user.email }}</p>
-        <p>Team:
-        <a href="{% url 'team_profile' pk=user.userprofile.teams.team_id %}">
-            {{ user.userprofile.teams }}
-        </a>
-        </p>
-        <p>User Description: {{ user.userprofile.description }}</p>
-    </p>
+        <p>Date joined: {{ user.date_joined }}</p>
+    <p>
 </div>
 {% endblock %}

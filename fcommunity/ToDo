@@ -1,0 +1,26 @@
+ - Google Maps
+ - Match pages with Chats
+_____________________________
+
+ - Make it functional(Create Team, Match, Competition, Ground; Join, Leave)
+ - Competition Scheduler
+_____________________________
+
+ - Play with Registration Form
+ - Connect KMeans with users/teams
+ - Make Tests
+_____________________________
+
+ - Team Chats
+ - Make it look good
+_____________________________
+
+
+
+
+
+Add constraints for matches - e.g. only teams from said competition can play; home and away teams cannot be the same
+Django smartfields for image resizing
+Match competition should not be compulsory (single matches)
+Address should be separate table with just longitude and latitude
+Get population density automatically for tests and db population
