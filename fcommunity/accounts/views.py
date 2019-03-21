@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.template import loader
 from django.http import HttpResponse
-from .forms import CommentForm, LocationForm
+from .forms import CommentForm, LocationForm, EditForm
 from accounts.models import TeamProfile, CompetitionProfile, GroundProfile, Match, Result, UserProfile
 
 # Create your views here.
@@ -84,10 +84,26 @@ def add_comment_to_ground(request, pk):
             comment.post = ground
             comment.author = request.user
             comment.save()
-            return redirect('ground_profile', pk = ground.ground_id)
+            return redirect('ground_profile', pk=ground.ground_id)
     else:
         form = CommentForm()
     return render(request, 'accounts/add_comment_to_ground.html', {'form': form})
+
+# @login_required
+# def add_location(request, pk):
+#     ground = GroundProfile.objects.get(ground_id = pk)
+#     #get_object_or_404(GroundProfile, ground_id=pk)
+#     if request.method == "POST":
+#         form = LocForm(request.POST or None, instance = ground)
+#         if form.is_valid():
+#             ground = GroundProfile.objects.get(ground_id=pk)
+#             form.save()
+#             # ground.save()
+#             return redirect('ground_profile', pk=ground.ground_id)
+#     else:
+#         form = LocForm()
+#     return render(request, 'accounts/add_location.html', {'form': form})
+
 
 @login_required
 def new_ground(request):
@@ -96,8 +112,29 @@ def new_ground(request):
         if form.is_valid():
             GroundProfile = form.save(commit=False)
             GroundProfile.save()
-            return redirect('/account/profile')
+            return redirect('ground_profile', pk=GroundProfile.ground_id)
     else:
         form = LocationForm()
     return render(request, 'accounts/new_ground.html', {'form': form})
 
+@login_required
+def join_team(request):
+    # args = {'user': request.user}
+    template = loader.get_template('accounts/join_team.html')
+    context = {'teams': TeamProfile.objects.all(), 'user': request.user}
+    return HttpResponse(template.render(context, request))
+
+@login_required
+def edit_profile(request):
+    user = request.user.userprofile
+    #get_object_or_404(GroundProfile, ground_id=pk)
+    if request.method == "POST":
+        form = EditForm(request.POST or None, instance = user)
+        if form.is_valid():
+            user = request.user.userprofile
+            form.save()
+            # ground.save()
+            return redirect('profile')
+    else:
+        form = EditForm()
+    return render(request, 'accounts/edit_profile.html', {'form': form})

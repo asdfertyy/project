@@ -1,11 +1,25 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+import math
+from django.db.backends.signals import connection_created
+from django.dispatch import receiver
 from django.db import models
 from django_google_maps import fields as map_fields
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from django.db.models.expressions import RawSQL
 import datetime
+
+
+@receiver(connection_created)
+def extend_sqlite(connection=None, **kwargs):
+    if connection.vendor == "sqlite":
+        # sqlite doesn't natively support math functions, so add them
+        cf = connection.connection.create_function
+        cf('acos', 1, math.acos)
+        cf('cos', 1, math.cos)
+        cf('radians', 1, math.radians)
+        cf('sin', 1, math.sin)
 
 # Create your models here.
 class GroundProfile(models.Model):
@@ -14,11 +28,13 @@ class GroundProfile(models.Model):
     ground_address = models.CharField(max_length=200)
     ground_latitude = models.DecimalField(max_digits=18, decimal_places=10, null=True)
     ground_longitude = models.DecimalField(max_digits=18, decimal_places=10, null=True)#, default = '')#[53.480614, -2.237503])
-    ground_description = models.CharField(max_length = 250, default = '')
+    ground_description = models.TextField(max_length = 250, default = '')
     is_it_paid = models.BooleanField(default = 0)
 
     def __str__(self):
         return self.ground_name
+
+
 
     # def save(self, *args, **kwargs):
     #     # If latlng has no value:
@@ -46,8 +62,8 @@ class CompetitionProfile(models.Model):
 
 class TeamProfile(models.Model):
     team_id = models.AutoField(primary_key=True)
-    team_name = models.CharField(max_length = 30, default = 'https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/football2-256.png')
-    team_logo = models.URLField(null=True, max_length = 2000)
+    team_name = models.CharField(max_length = 30)
+    team_logo = models.URLField(null=True, max_length = 2000, default = 'https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/football2-256.png')
     team_date_formed = models.DateField(blank = True, default = datetime.date.today)
     team_matches_played = models.IntegerField(default = 0)
     team_wins = models.IntegerField(default = 0)
@@ -55,8 +71,9 @@ class TeamProfile(models.Model):
     team_draws = models.IntegerField(default = 0)
     team_losses = models.IntegerField(default = 0)
     team_address = models.ForeignKey(GroundProfile, on_delete=models.CASCADE)
-    team_description = models.CharField(max_length = 250, default = '')
+    team_description = models.TextField(max_length = 250, default = '')
     comps = models.ManyToManyField(CompetitionProfile)
+
 
 
     def __str__(self):
@@ -103,13 +120,18 @@ class Result(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT)
-    description = models.CharField(max_length = 250, default = '')
+    description = models.TextField(max_length = 250, default = '')
     user_image = models.URLField(null=True, max_length=2000, default = 'https://cdn0.iconfinder.com/data/icons/typicons-2/24/user-256.png')
-    address = models.CharField(max_length = 100, default = '')
-    birthday = models.DateField(blank = True, default = datetime.date.today)
-    teams = models.ForeignKey(TeamProfile, on_delete=models.PROTECT, null = True, default = 1)
+    user_latitude = models.DecimalField(max_digits=18, decimal_places=10, null=True)
+    user_longitude = models.DecimalField(max_digits=18, decimal_places=10, null=True)
+    date_joined = models.DateField(default = datetime.date.today)
+    teams = models.ForeignKey(TeamProfile, on_delete=models.PROTECT, null = True)
 
     objects = models.Manager()
+
+    def get_nearby_teams(self):
+        nearby_locations = get_locations_nearby_coords(self.user_latitude, self.user_longitude, 10)
+        return nearby_locations
 
 
     def __str__(self):
@@ -135,3 +157,20 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.body
+
+
+def get_locations_nearby_coords(ground_latitude, ground_longitude, max_distance=None):
+    """
+   Return objects sorted by distance to specified coordinates
+   which distance is less than max_distance given in kilometers
+   """
+    # Great circle distance formula
+
+
+    gcd_formula = "6371 * acos(cos(radians(%s)) *  cos(radians(ground_latitude)) * cos(radians(ground_longitude) - radians(%s)) + \
+        sin(radians(%s)) * sin(radians(ground_latitude)))"
+    distance_raw_sql = RawSQL(gcd_formula, (ground_latitude, ground_longitude, ground_latitude))
+    qs = GroundProfile.objects.all().annotate(distance=distance_raw_sql).order_by('distance')
+    if max_distance is not None:
+        qs = qs.filter(distance__lt=max_distance)
+    return qs

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+
+{% block head %}
+<title>Home</title>
+{% endblock %}
+{% block body %}
+<div class = "container">
+    {% if user.userprofile.user_latitude is None %}
+    <h2>All Teams:</h2>
+    {% for team in teams %}
+        <a href="{% url 'team_profile' pk=team.team_id %}">
+            <h5>{{ team }}</h5>
+        </a>
+        {% for userprofile in team.userprofile_set.all %}
+            <a href="{% url 'user_profile' pk=userprofile.user.pk %}">
+            {{ userprofile }}
+            </a>
+            <br>
+        {% endfor %}
+    <br>
+    {% endfor %}
+    {% else %}
+    {% with nearby_teams=user.userprofile.get_nearby_teams %}
+        {% for team in nearby_teams %}
+        <a href="{% url 'team_profile' pk=team.team_id %}">
+            <h5>{{ team }}</h5>
+        </a>
+        {% for userprofile in team.userprofile_set.all %}
+            <a href="{% url 'user_profile' pk=userprofile.user.pk %}">
+            {{ userprofile }}
+            </a>
+            <br>
+        {% endfor %}
+    <br>
+    {% endfor %}
+    {% endwith %}
+    {% endif %}
+</div>
+{% endblock %}

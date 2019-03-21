@@ -1,14 +1,16 @@
 {% extends 'base.html' %}
-{% load render_bundle from webpack_loader %}
 
 {% block head %}
-<title>Home</title>
+    <title>Register</title>
 {% endblock %}
 {% block body %}
     <div id="map_canvas" style="width:300px;height:400px;"></div>
-    <form method="POST" class="post-form">{% csrf_token %}
+    <h1>Register here</h1>
+    <br>
+    <form method="post">
+        {% csrf_token %}
         {{ form.as_p }}
-<script>
+        <script>
         var map, marker;
         var lat, lon, newLat, newLon;
         var loc;
@@ -27,8 +29,8 @@ function initialize() {
     newLat = Math.floor(lat * 10000000000) / 10000000000;
     lon = event.latLng.lng();
     newLon = Math.floor(lon * 10000000000) / 10000000000;
-    document.getElementById('id_ground_latitude').value = newLat;
-    document.getElementById('id_ground_longitude').value = newLon;
+    document.getElementById('id_user_latitude').value = newLat;
+    document.getElementById('id_user_longitude').value = newLon;
   });
 }
 
@@ -45,6 +47,6 @@ function placeMarker(location) {
 }
 </script>
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8XU4PSHx0Isv2mLtE04TA1twJ0K0Ru_g&callback=initialize"></script>
-        <button type="submit" class="save btn btn-default">Send</button>
+        <button type="submit" class="btn btn-outline-success">Register</button>
     </form>
 {% endblock %}

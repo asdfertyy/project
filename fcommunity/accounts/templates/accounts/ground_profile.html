@@ -17,9 +17,12 @@ function initMap() {
   var marker = new google.maps.Marker({position: uluru, map: map});
 }
 </script>
+{% if ground.ground_latitude %}
 
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8XU4PSHx0Isv2mLtE04TA1twJ0K0Ru_g&callback=initMap"></script>
-
+{% else %}
+<a class="btn btn-default" href="{% url 'add_location' pk=ground.ground_id %}">Add a location</a>
+{%endif%}
 <p class = "container">
     <p>
         <p>Name: {{ ground.ground_name }}</p>

@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^login/$', LoginView.as_view(template_name="accounts/login.html"), name = "login"),
     url(r'^logout/$', LogoutView.as_view(template_name="accounts/logout.html"), name = "logout"),
     url(r'^register/$', views.register, name = 'register'),
+    url(r'^edit/$', views.edit_profile, name = 'edit_profile'),
     url(r'^new_ground/$', views.new_ground, name = 'new_ground'),
     url(r'^profile/$', views.profile, name = 'profile'),
     url(r'^all_teams/$', views.all_teams, name = 'all_teams'),
@@ -19,4 +20,6 @@ urlpatterns = [
     url(r'^ground/(?P<pk>\d+)/$', views.ground_profile, name = 'ground_profile'),
     url(r'^profile/(?P<pk>\d+)/$', views.user_profile, name = 'user_profile'),
     url(r'ground/(?P<pk>\d+)/comment/$', views.add_comment_to_ground, name='add_comment_to_ground'),
+    # url(r'ground/(?P<pk>\d+)/add_location/$', views.add_location, name='add_location'),
+    url(r'^join_team/$', views.join_team, name = 'join_team'),
 ]

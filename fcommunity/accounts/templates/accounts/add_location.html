@@ -1,13 +1,12 @@
 {% extends 'base.html' %}
 {% load render_bundle from webpack_loader %}
-
 {% block head %}
 <title>Home</title>
 {% endblock %}
 {% block body %}
     <div id="map_canvas" style="width:300px;height:400px;"></div>
-    <form method="POST" class="post-form">{% csrf_token %}
-        {{ form.as_p }}
+<form method="POST" class="post-form">{% csrf_token %}
+{{ form.as_p }}
 <script>
         var map, marker;
         var lat, lon, newLat, newLon;
@@ -47,4 +46,4 @@ function placeMarker(location) {
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8XU4PSHx0Isv2mLtE04TA1twJ0K0Ru_g&callback=initialize"></script>
         <button type="submit" class="save btn btn-default">Send</button>
     </form>
-{% endblock %}
+ {% endblock %}

@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Comment, GroundProfile
+from .models import Comment, GroundProfile, UserProfile
 import urllib, urllib2, simplejson
 import json
 from decimal import Decimal
@@ -19,11 +19,10 @@ class RegistrationForm(UserCreationForm):
             'first_name',
             'last_name',
             'email',
-            # 'address',
-            # 'birthday',
             'password1',
             'password2'
         )
+
 
         def save(self, commit = True):
             user = super(RegistrationForm, self).save(commit = False)
@@ -48,7 +47,8 @@ class CommentForm(forms.ModelForm):
 class LocationForm(forms.ModelForm):
     class Meta:
         model = GroundProfile
-        exclude = ('ground_latitude','ground_longitude')
+        exclude = ('ground_address', )
+        widgets = {'ground_latitude': forms.HiddenInput(), 'ground_longitude': forms.HiddenInput()}
 
         # def save(self):
         #     if not self.ground_latitude or not self.ground_longitude:
@@ -67,3 +67,9 @@ class LocationForm(forms.ModelForm):
         #         lat = data['results'][0]['geometry']['location']['lat']
         #         lng = data['results'][0]['geometry']['location']['lng']
         #         return Decimal(lat), Decimal(lng)
+
+class EditForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        exclude = ('user', 'date_joined', 'teams', )
+        widgets = {'user_latitude': forms.HiddenInput(), 'user_longitude': forms.HiddenInput()}
