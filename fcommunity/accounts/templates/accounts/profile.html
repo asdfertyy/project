@@ -6,22 +6,45 @@
 {% endblock %}
 {% block body %}
 
-<div class = "container">
+<div class = "container" align = 'center'>
     <p>
-        <p><img src = {{ user.userprofile.user_image }}></p>
-        <p class="font-weight-bold"><h2>{{ user.first_name }} {{ user.last_name }}</h2></p>
-        <p>Email: {{ user.email }}</p>
-        <a class="btn btn-outline-success my-2 my-sm-0" href="/account/edit" role="button">Edit Profile</a>
-        <p>Team:
-            {% if user.userprofile.teams %}
-            <a href="{% url 'team_profile' pk=user.userprofile.teams.team_id %}">
-                {{ user.userprofile.teams }} </a>
-            <button type="button" class="btn btn-secondary">Leave Team</button>
-            <button type="button" class="btn btn-secondary">Think of leaving</button>
-            {% else %}
-            None
-            <a class="btn btn-outline-success my-2 my-sm-0" href="/account/join_team" role="button">Join a Team</a>
-            {% endif %}
+    <p><img src = {{ user.userprofile.user_image }}></p>
+    <p class="font-weight-bold"><h2>{{ user.first_name }} {{ user.last_name }}</h2></p>
+    <p>Email: {{ user.email }}</p>
+    <a class="btn btn-outline-success my-2 my-sm-0" href="/account/edit" role="button">Edit Profile</a>
+    <p>Team:
+    {% if user.userprofile.teams %}
+        <a href="{% url 'team_profile' pk=user.userprofile.teams.team_id %}">
+            {{ user.userprofile.teams }}
+        </a>
+        <form method='get' action='#'>
+            <input type="submit" class="btn btn-outline-success my-2 my-sm-0" value="Leave Team" name="leaveTeamBtn"/>
+        </form>
+        {% if user.userprofile.wantsToLeave %}
+            <form method='get' action='#'>
+                <input type="submit" class="btn btn-success" value="Think of Leaving Team" name="thinkOfLeavingBtn"/>
+            </form>
+        {% else %}
+        <form method='get' action='#'>
+            <input type="submit" class="btn btn-outline-success my-2 my-sm-0" value="Think of Leaving Team" name="thinkOfLeavingBtn"/>
+        </form>
+        {% endif %}
+    {% else %}
+        None
+        <a class="btn btn-outline-success my-2 my-sm-0" href="/account/join_team" role="button">Join a Team</a>
+    <a class="btn btn-outline-success my-2 my-sm-0" href="/account/create_team" role="button">Create a Team</a>
+    {% endif %}
     </p>
+    {% if user.userprofile.temp_team %}
+        NEW TEAM RECOMMENDED!!!
+        <br>
+        Members:<br>
+        {% for userprofile in user.userprofile.temp_team.userprofile_set.all %}
+    <a href="{% url 'user_profile' pk=userprofile.user.pk %}">{{ userprofile }}</a>
+        {% endfor %}
+        <form method='get' action='#'>
+            <input type="submit" class="btn btn-outline-success my-2 my-sm-0" value="Join Recommended Team" name="joinRecTeamBtn"/>
+        </form>
+    {% endif %}
 </div>
 {% endblock %}

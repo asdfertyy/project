@@ -6,29 +6,31 @@
 {% endblock %}
 {% block body %}
 
-<p class = "container">
-    <p>
+<div class = "container"  align="center">
+    <p >
         <p>Name: {{ comp.comp_name }}</p>
-        {% if comp.comp_type is 0 %}
-            <p> Group & Knockout </p>
-        {% elif comp.comp_type is 1 %}
-            <p> League </p>
-        {% else %}
-            <p> Knockout </p>
-        {% endif %}
-        <p>Team Size: {{ comp.comp_teamsize }}</p>
-        <p>Squad Size: {{ comp.comp_squadsize }}</p>
+        <p>{{ comp.comp_type }}<p>
+        <p>Team Size: {{ comp.comp_teamNumber }}</p>
+        <p>Squad Size: {{ comp.comp_squadSize }}</p>
         <p>Start Date: {{ comp.comp_start_date }}</p>
         <p>End Date: {{ comp.comp_end_date }}</p>
 
-        <!--<p>Teams:<br>-->
-        <!--{% for team in team.comps %}-->
-            <!--<a href="{% url 'comp_profile' pk=comp.comp_id %}">-->
-                <!--{{ comp }}-->
-            <!--</a>-->
-            <!--<br>-->
-        <!--{% endfor %}-->
-        <!--</p>-->
+        <p>Teams:<br>
+        {% for team in comp.teamprofile_set.all %}
+            <a href="{% url 'team_profile' pk=team.team_id %}">
+                {{ team }}
+            </a>
+            <br>
+        {% endfor %}
+        {% if comp.has_matches %}
+            <a class="btn btn-outline-success my-2 my-sm-0" href="{% url 'view_comp_matches' pk=comp.comp_id %}" role="button">View Matches</a>
+        {% endif %}
+        </p>
+        {% if user.userprofile.teams not in comp.teamprofile_set.all %}
+            <form method='get' action='#'>
+                <input type="submit" class="btn btn-outline-success my-2 my-sm-0" value="Join This Competition" name="joinCompBtn"/>
+            </form>
+        {% endif %}
     </p>
 </div>
 {% endblock %}

@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Comment, GroundProfile, UserProfile
+from .models import Comment, Chat, Result, GroundProfile, UserProfile, TeamProfile, CompetitionProfile, Match
 import urllib, urllib2, simplejson
 import json
 from decimal import Decimal
@@ -43,6 +43,10 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ('body',)
 
+class ChatForm(forms.ModelForm):
+    class Meta:
+        model = Chat
+        fields = ('body',)
 
 class LocationForm(forms.ModelForm):
     class Meta:
@@ -71,5 +75,25 @@ class LocationForm(forms.ModelForm):
 class EditForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        exclude = ('user', 'date_joined', 'teams', )
+        exclude = ('user', 'date_joined', 'teams', 'wantsToLeave', 'temp_team',)
         widgets = {'user_latitude': forms.HiddenInput(), 'user_longitude': forms.HiddenInput()}
+
+class TeamCreationForm(forms.ModelForm):
+    class Meta:
+        model = TeamProfile
+        exclude = ('team_date_joined', 'comps')
+
+class CompCreationForm(forms.ModelForm):
+    class Meta:
+        model = CompetitionProfile
+        exclude = ('match_result',)
+
+class ResultForm(forms.ModelForm):
+    class Meta:
+        model = Result
+        exclude = ('match_result',)
+
+class MatchForm(forms.ModelForm):
+    class Meta:
+        model = Match
+        exclude = ('match_competition', 'match_home_team', 'match_away_team', 'stage', 'status')

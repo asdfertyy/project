@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+{% block head %}
+<title>Home</title>
+{% endblock %}
+{% block body %}
+    <div id="map_canvas" style="width:1100px;height:400px;" align="center"></div>
+<form method="POST" class="post-form" align="center">{% csrf_token %}
+{{ form.as_p }}
+<script>
+        var map, marker;
+        var lat, lon, newLat, newLon;
+        var loc;
+function initialize() {
+  var myLatlng = new google.maps.LatLng(53.4590950000,-2.2168500000);
+  var myOptions = {
+    zoom: 12,
+    scrollwheel: true,
+    center: myLatlng,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  }
+  map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+
+  {% for ground in grounds %}
+        var markerPoint = new google.maps.LatLng({{ ground.ground_latitude }}, {{ ground.ground_longitude }});
+        var marker = new google.maps.Marker({position: markerPoint, map: map, title: '{{ ground.ground_name }}' });
+        var contentString = '<div id="content">'+
+            '<div id="siteNotice">'+
+            '</div>'+
+            '<h1 id="firstHeading" class="firstHeading">{{ ground.ground_name }}</h1>'+
+            '<div id="bodyContent">'+
+            '<p>{{ ground.ground_description }}</p>'+
+            'Is it Payed? {{ ground.is_it_payed|yesno:"Yes,No" }}</p>'+
+            '</div>'+
+            '</div>';
+        var infowindow = new google.maps.InfoWindow({content:contentString});
+        marker.addListener('click', (function(marker,contentString,infowindow) {
+          return function() {
+          infowindow.setContent(contentString);
+          infowindow.open(map, marker);
+        };
+        })(marker,contentString,infowindow));
+  {% endfor %}
+}
+
+</script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8XU4PSHx0Isv2mLtE04TA1twJ0K0Ru_g&callback=initialize"></script>
+        <button type="submit" class="save btn btn-default">Send</button>
+    </form>
+ {% endblock %}

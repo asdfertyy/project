@@ -5,7 +5,7 @@
 {% endblock %}
 {% block body %}
     <div id="map_canvas" style="width:300px;height:400px;"></div>
-    <h1>Register here</h1>
+    <h1>Edit Profile</h1>
     <br>
     <form method="post">
         {% csrf_token %}
@@ -47,6 +47,6 @@ function placeMarker(location) {
 }
 </script>
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8XU4PSHx0Isv2mLtE04TA1twJ0K0Ru_g&callback=initialize"></script>
-        <button type="submit" class="btn btn-outline-success">Register</button>
+        <button type="submit" class="btn btn-outline-success">Submit</button>
     </form>
 {% endblock %}

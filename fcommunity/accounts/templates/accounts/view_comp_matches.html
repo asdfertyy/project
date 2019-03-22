@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+
+{% block head %}
+<title>Home</title>
+{% endblock %}
+{% block body %}
+
+<div class = "container">
+    <h2>Future Matches:</h2>
+    {% for match in matches %}
+        {% if comp == match.match_competition and match.status != 'Finished' %}
+            <a href="{% url 'match_profile' pk=match.match_id %}">
+            <h5>{{ match }}</h5>
+            </a><br>
+        {% endif %}
+    {% endfor %}
+    <br><br><br>
+    <h2>Past Matches:</h2>
+    {% for match in matches %}
+        {% if comp == match.match_competition and match.status == 'Finished' %}
+            <a href="{% url 'match_profile' pk=match.match_id %}">
+            <h5>{{ match.result }}</h5>
+            </a><br>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}

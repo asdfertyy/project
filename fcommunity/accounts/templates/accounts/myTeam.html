@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+
+{% block head %}
+<title>Home</title>
+{% endblock %}
+{% block body %}
+
+<p class = "container">
+    <p>
+        <p><img src = {{ user.userprofile.teams.team_logo }}></p>
+        <p class="font-weight-bold"><h2>{{ user.userprofile.teams.team_name }}</h2></p>
+        <p>Date Formed: {{ user.userprofile.teams.team_date_formed }}</p>
+        <p>Members:
+            {% for userprofile in user.userprofile.teams.userprofile_set.all %}
+                <a href="{% url 'user_profile' pk=userprofile.user.pk %}">{{ userprofile }}</a>
+            {% endfor %}
+        </p>
+        <p>Matches Played: </p>
+        <p>
+            W:
+            <br>
+            D:
+            <br>
+            L:
+        </p>
+        <p>Team Address: {{ user.userprofile.teams.team_address }}</p>
+        <p>Team Description: {{ user.userprofile.teams.team_description }}</p>
+        <button type="button" class="btn btn-secondary">Match History</button>
+        <p>Competitions:<br>
+        {% for comp in user.userprofile.teams.comps.all %}
+            <a href="{% url 'comp_profile' pk=comp.comp_id %}">
+                {{ comp }}
+            </a>
+            <br>
+        {% endfor %}
+        </p>
+    </p>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+
+{% block head %}
+<title>Home</title>
+{% endblock %}
+{% block body %}
+<div id="googleMap" style="width:1100px;height:400px;"></div>
+<script>
+function initMap() {
+  // The location of Uluru
+  var uluru = new google.maps.LatLng(53.480614, -2.237503);
+  // The map, centered at Uluru
+  var map = new google.maps.Map(
+      document.getElementById('googleMap'), {zoom: 12, center: uluru});
+  // The marker, positioned at Uluru
+  {% for user in users %}
+        var markerPoint = new google.maps.LatLng({{ user.userprofile.user_latitude }}, {{ user.userprofile.user_longitude }});
+        var marker = new google.maps.Marker({position: markerPoint, map: map});
+  {% endfor %}
+}
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8XU4PSHx0Isv2mLtE04TA1twJ0K0Ru_g&callback=initMap"></script>
+<div class = "container" align = 'center'>
+    <h2>All Users:</h2>
+    {% for user in users %}
+        <a href="{% url 'user_profile' pk=user.id %}">
+        <h5>{{ user }}</h5>
+        </a>
+    <br>
+    {% endfor %}
+</div>
+{% endblock %}

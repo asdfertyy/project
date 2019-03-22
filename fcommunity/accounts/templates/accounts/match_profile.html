@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+
+{% block head %}
+<title>Home</title>
+{% endblock %}
+{% block body %}
+
+<div class = "container"  align="center">
+    <p>
+        {% if match.status != 'Finished' %}
+        <p><img src = {{ match.match_home_team.team_logo }}> {{match}} <img src = {{ match.match_away_team.team_logo }}><br>
+        <a class="btn btn-outline-success my-2 my-sm-0" href="{% url 'edit_match' pk=match.match_id %}" role="button">Edit match</a>
+        <a class="btn btn-outline-success my-2 my-sm-0" href="{% url 'submit_result' pk=match.match_id %}" role="button">Submit Result</a>
+        {% else %}
+        <p><img src = {{ match.match_home_team.team_logo }}> {{match.result__str__}} <img src = {{ match.match_away_team.team_logo }}>
+        {% endif %}
+    </p>
+    Comments: {{ match.chat.count }}
+        <br>
+        <a class="btn btn-default" href="{% url 'add_message_to_match' pk=match.match_id %}">Add a message</a>
+        <br>
+        ____________________________________________
+
+        {% for chatmess in match.chat.all %}
+            <div class="comment">
+                <strong>{{ chatmess.author }}: </strong>
+                <p>{{ chatmess.body|linebreaks }}</p>
+                {{ chatmess.created }}
+                <br>
+                ____________________________________________
+            </div>
+        {% empty %}
+        <p>No comments here yet :(</p>
+        {% endfor %}
+</div>
+{% endblock %}

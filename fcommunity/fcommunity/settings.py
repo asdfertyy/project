@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'accounts',
     'django_google_maps',
     'easy_maps',
+    'django.contrib.gis', 
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import math
+from typing import Set, Any
+
+from geopy.distance import vincenty
 from django.db.backends.signals import connection_created
 from django.dispatch import receiver
 from django.db import models
@@ -11,15 +14,15 @@ from django.db.models.expressions import RawSQL
 import datetime
 
 
-@receiver(connection_created)
-def extend_sqlite(connection=None, **kwargs):
-    if connection.vendor == "sqlite":
-        # sqlite doesn't natively support math functions, so add them
-        cf = connection.connection.create_function
-        cf('acos', 1, math.acos)
-        cf('cos', 1, math.cos)
-        cf('radians', 1, math.radians)
-        cf('sin', 1, math.sin)
+# @receiver(connection_created)
+# def extend_sqlite(connection=None, **kwargs):
+#     if connection.vendor == "sqlite":
+#         # sqlite doesn't natively support math functions, so add them
+#         cf = connection.connection.create_function
+#         cf('acos', 1, math.acos)
+#         cf('cos', 1, math.cos)
+#         cf('radians', 1, math.radians)
+#         cf('sin', 1, math.sin)
 
 # Create your models here.
 class GroundProfile(models.Model):
@@ -50,8 +53,13 @@ class GroundProfile(models.Model):
 class CompetitionProfile(models.Model):
     comp_id = models.AutoField(primary_key=True)
     comp_name = models.CharField(max_length = 30)
-    comp_type = models.IntegerField(default = 0) # 0 - league; 1 - knockout, 1 leg; 2 - knockout, 2 legs
-    comp_teamNumber = models.IntegerField(default = 5)
+    COMP_TYPE = (
+        ('League', 'League'),
+        ('Cup', 'Cup'),
+    )
+    has_matches = models.BooleanField(default = False)
+    comp_type = models.CharField(max_length=255, choices=COMP_TYPE, default = 'League')
+    comp_teamNumber = models.IntegerField(default = 8)
     comp_squadSize = models.IntegerField(default = 10)
     comp_start_date = models.DateField(blank = True, default = datetime.date.today)
     comp_end_date = models.DateField(blank = True, default = datetime.date.today)
@@ -65,14 +73,9 @@ class TeamProfile(models.Model):
     team_name = models.CharField(max_length = 30)
     team_logo = models.URLField(null=True, max_length = 2000, default = 'https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/football2-256.png')
     team_date_formed = models.DateField(blank = True, default = datetime.date.today)
-    team_matches_played = models.IntegerField(default = 0)
-    team_wins = models.IntegerField(default = 0)
-    team_type = models.IntegerField(default = 0)
-    team_draws = models.IntegerField(default = 0)
-    team_losses = models.IntegerField(default = 0)
-    team_address = models.ForeignKey(GroundProfile, on_delete=models.CASCADE)
+    team_address = models.ForeignKey(GroundProfile, on_delete=models.CASCADE, null = True)
     team_description = models.TextField(max_length = 250, default = '')
-    comps = models.ManyToManyField(CompetitionProfile)
+    comps = models.ManyToManyField(CompetitionProfile, blank = True)
 
 
 
@@ -83,13 +86,22 @@ class TeamProfile(models.Model):
     #     ordering = ('team_name',)
 
 
+class TempTeamProfile(models.Model):
+    tempTeam_id = models.AutoField(primary_key=True)
+    tempTeam_name = models.CharField(max_length = 30)
+
+    def __str__(self):
+        return self.tempTeam_name
+
+
 class Match(models.Model):
     match_id = models.AutoField(primary_key=True)
     match_competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE)
     match_home_team = models.ForeignKey(TeamProfile, related_name='home_team', on_delete=models.CASCADE)
     match_away_team = models.ForeignKey(TeamProfile, related_name='away_team', on_delete=models.CASCADE)
-    match_date = models.DateTimeField()
-    match_location = models.ForeignKey(GroundProfile, on_delete=models.CASCADE)
+    match_date = models.DateTimeField(null = True)
+    match_location = models.ForeignKey(GroundProfile, on_delete=models.CASCADE, null = True)
+    stage = models.IntegerField(default = 0)
     STATUS = (
         ('Expected', 'Expected'),
         ('Scheduled', 'Scheduled'),
@@ -106,16 +118,14 @@ class Match(models.Model):
         )
 
 class Result(models.Model):
-    match_result = models.ForeignKey(Match, on_delete=models.CASCADE)
+    match_result = models.ForeignKey(Match, on_delete=models.CASCADE, related_name = 'result')
     home_goals = models.PositiveSmallIntegerField()
     away_goals = models.PositiveSmallIntegerField()
 
     def __str__(self):
-        return '%s  %s - %s  %s' % (
-            self.match_result.match_home_team,
+        return '%d - %d' % (
             self.home_goals,
             self.away_goals,
-            self.match_result.match_away_team,
         )
 
 class UserProfile(models.Model):
@@ -126,13 +136,9 @@ class UserProfile(models.Model):
     user_longitude = models.DecimalField(max_digits=18, decimal_places=10, null=True)
     date_joined = models.DateField(default = datetime.date.today)
     teams = models.ForeignKey(TeamProfile, on_delete=models.PROTECT, null = True)
-
+    temp_team = models.ForeignKey(TempTeamProfile, on_delete=models.SET_NULL, null=True)
+    wantsToLeave = models.BooleanField(default = 0)
     objects = models.Manager()
-
-    def get_nearby_teams(self):
-        nearby_locations = get_locations_nearby_coords(self.user_latitude, self.user_longitude, 10)
-        return nearby_locations
-
 
     def __str__(self):
         return self.user.username
@@ -158,19 +164,14 @@ class Comment(models.Model):
     def __str__(self):
         return self.body
 
+class Chat(models.Model):
+    post = models.ForeignKey(Match, related_name='chat')
+    author = models.ForeignKey(User, on_delete = models.PROTECT)
+    body = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
 
-def get_locations_nearby_coords(ground_latitude, ground_longitude, max_distance=None):
-    """
-   Return objects sorted by distance to specified coordinates
-   which distance is less than max_distance given in kilometers
-   """
-    # Great circle distance formula
+    class Meta:
+        ordering = ('created',)
 
-
-    gcd_formula = "6371 * acos(cos(radians(%s)) *  cos(radians(ground_latitude)) * cos(radians(ground_longitude) - radians(%s)) + \
-        sin(radians(%s)) * sin(radians(ground_latitude)))"
-    distance_raw_sql = RawSQL(gcd_formula, (ground_latitude, ground_longitude, ground_latitude))
-    qs = GroundProfile.objects.all().annotate(distance=distance_raw_sql).order_by('distance')
-    if max_distance is not None:
-        qs = qs.filter(distance__lt=max_distance)
-    return qs
+    def __str__(self):
+        return self.body
